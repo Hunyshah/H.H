@@ -8,7 +8,7 @@ import { buttonBase, buttonVariants } from "@/components/ui/ButtonLink";
 import { trackEvent } from "@/lib/analytics/events";
 import { telHref, whatsappHref } from "@/lib/contact";
 import { mainNav, sectorLinks, ui } from "@/lib/content/site";
-import { cn } from "@/lib/utils";
+import { clsx } from "clsx";
 
 import { Logo } from "./Logo";
 import { TrackedLink } from "./TrackedLink";
@@ -70,7 +70,7 @@ export function Header({ phone, whatsapp }: HeaderProps) {
 
   return (
     <header
-      className={cn(
+      className={clsx(
         "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-500 ease-arch",
         scrolled || open
           ? "border-b border-line-dark bg-ink-950"
@@ -109,13 +109,15 @@ export function Header({ phone, whatsapp }: HeaderProps) {
             <PhoneIcon size={18} />
             {phone}
           </TrackedLink>
-          <Link
-            href="/contact#quote"
-            onClick={() => trackEvent("estimate_click", { placement: "header" })}
-            className={cn(buttonBase, buttonVariants.gold, "hidden px-5 sm:inline-flex")}
-          >
-            {ui.freeEstimate}
-          </Link>
+          <span className="hidden sm:inline-flex">
+            <Link
+              href="/contact#quote"
+              onClick={() => trackEvent("estimate_click", { placement: "header" })}
+              className={clsx(buttonBase, buttonVariants.gold, "px-5")}
+            >
+              {ui.freeEstimate}
+            </Link>
+          </span>
           <button
             ref={toggleRef}
             type="button"
@@ -181,7 +183,7 @@ export function Header({ phone, whatsapp }: HeaderProps) {
                 trackEvent("estimate_click", { placement: "mobile_menu" });
                 setOpen(false);
               }}
-              className={cn(buttonBase, buttonVariants.gold, "w-full")}
+              className={clsx(buttonBase, buttonVariants.gold, "w-full px-6")}
             >
               {ui.freeEstimate}
             </Link>
@@ -190,7 +192,7 @@ export function Header({ phone, whatsapp }: HeaderProps) {
                 href={telHref(phone)}
                 event="call_click"
                 placement="mobile_menu"
-                className={cn(buttonBase, buttonVariants["outline-dark"], "px-3")}
+                className={clsx(buttonBase, buttonVariants["outline-dark"], "px-3")}
               >
                 <PhoneIcon size={18} />
                 {ui.call}
@@ -201,7 +203,7 @@ export function Header({ phone, whatsapp }: HeaderProps) {
                 placement="mobile_menu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(buttonBase, buttonVariants["outline-dark"], "px-3")}
+                className={clsx(buttonBase, buttonVariants["outline-dark"], "px-3")}
               >
                 <WhatsAppIcon size={18} />
                 {ui.whatsapp}

@@ -1,0 +1,26 @@
+export const quoteForm = {
+  stepLabel: (n: number, total: number) => `Step ${n} of ${total}`,
+  stepTitles: ["Project", "Plot", "Your details"],
+  projectType: "What are you planning?",
+  plotSize: "Plot / site size",
+  location: "Plot location",
+  locationPlaceholder: "e.g. Khurrianwala, Faisalabad",
+  name: "Your name",
+  phone: "Phone / WhatsApp",
+  budget: "Budget range",
+  message: "Anything else we should know?",
+  optional: "(optional)",
+  select: "Select…",
+  next: "Next",
+  back: "Back",
+  submit: "Request Free Estimate",
+  sending: "Sending…",
+  loading: "Loading the estimate form…",
+  privacy: "We only use your details to contact you about this project.",
+  sentTitle: "Thank you — we've received your request.",
+  sentText:
+    "An engineer will call you shortly to arrange a site visit. For a faster reply, continue on WhatsApp.",
+  continueWhatsapp: "Continue on WhatsApp",
+  whatsappSummaryIntro:
+    "Assalam-o-Alaikum H.H Associate, I just requested a free estimate on your website.",
+} as const;

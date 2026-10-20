@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Sora } from "next/font/google";
 
+import { revealScript } from "@/components/motion/reveal-script";
 import { site } from "@/lib/content/site";
 import { siteUrl } from "@/lib/env";
 
@@ -44,7 +45,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${sora.variable} ${manrope.variable}`}>
+    <html
+      lang="en"
+      className={`${sora.variable} ${manrope.variable}`}
+      // The reveal script adds the `js` class before hydration.
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: revealScript }} />
+      </head>
       <body>{children}</body>
     </html>
   );

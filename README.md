@@ -4,7 +4,7 @@ Production website for **H.H Associate**, a construction and civil engineering f
 Khurrianwala, Faisalabad. Next.js (App Router, Cache Components) + Tailwind CSS + Supabase,
 hosted on Vercel.
 
-> Status: **Phase 1 (foundation)** complete. Sections marked _(phase N)_ are filled in as
+> Status: **Phase 2 (home page)** complete. Sections marked _(phase N)_ are filled in as
 > the build progresses.
 
 ## Stack
@@ -64,19 +64,27 @@ Never put a secret in a `NEXT_PUBLIC_` variable — those values are shipped to 
 
 Schema, RLS policies, the storage bucket and base content live in `supabase/migrations/`:
 
-| File                     | Contents                                                                    |
-| ------------------------ | --------------------------------------------------------------------------- |
-| `…0100_schema.sql`       | Enums, tables, indexes, `updated_at` trigger                                |
-| `…0200_rls.sql`          | `is_admin()` helper, RLS on every table, `project-images` bucket + policies |
-| `…0300_base_content.sql` | The 6 services and the `site_settings` row (placeholders)                   |
-| `supabase/seed.sql`      | 6 sample `[placeholder]` projects with gallery images                       |
+| File                           | Contents                                                                                |
+| ------------------------------ | --------------------------------------------------------------------------------------- |
+| `…0100_schema.sql`             | Enums, tables, indexes, `updated_at` trigger                                            |
+| `…0200_rls.sql`                | `is_admin()` helper, RLS on every table, `project-images` bucket + policies             |
+| `…022258_base_content.sql`     |
+| `…022350_private_is_admin.sql` | Moves `is_admin()` to a non-API `private` schema; users can read their own `admins` row | The 6 services and the `site_settings` row (placeholders) |
+| `supabase/seed.sql`            | 6 sample `[placeholder]` projects with gallery images                                   |
 
 Access rules in short: the public can read published projects (and their media),
 services, settings and published testimonials. `leads` has no public access — the
 quote form inserts with the service-role key on the server. Admins (rows in `admins`)
 can read and write everything.
 
-### Apply the migrations
+### Hosted project
+
+The production database is the Supabase project **`hh-associate`** (ref
+`qsunxqbdgfheyaifbofv`, region `ap-south-1` Mumbai). All migrations and the seed are
+already applied there. Its URL is `https://qsunxqbdgfheyaifbofv.supabase.co`; take the
+publishable and secret keys from **Project Settings → API keys**.
+
+### Apply the migrations (new project)
 
 1. Create a free project at [supabase.com](https://supabase.com) (region: closest to
    Pakistan, e.g. Mumbai or Singapore).
@@ -130,6 +138,23 @@ lib/
 proxy.ts             /admin session gate (Next.js 16 renamed middleware → proxy)
 supabase/            migrations, seed, local config
 ```
+
+### Motion
+
+Animations follow one easing (`cubic-bezier(0.22, 1, 0.36, 1)`, tokens in `globals.css`):
+
+- **Reveals** (`components/motion/Reveal`, `SplitWords`): CSS transitions armed by a tiny inline
+  script in the root layout. Content is in the server HTML and stays visible without JS.
+- **Parallax, magnetic CTA, count-up**: small hand-written client components, desktop-only
+  where required, transform/opacity only.
+- **Process timeline**: GSAP ScrollTrigger, dynamically imported when the section nears the
+  viewport.
+- **Filter layout animation**: `useFlip` (Web Animations API).
+- `prefers-reduced-motion` turns every reveal into a plain fade and disables parallax,
+  magnetic buttons, Lenis and the timeline scrub.
+
+The Motion library from the original brief was replaced by these to keep the home page under
+the 200 KB JS budget (see phase 2 notes).
 
 ### Caching
 

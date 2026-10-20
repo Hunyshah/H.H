@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { site } from "@/lib/content/site";
-import { cn } from "@/lib/utils";
+import { clsx } from "clsx";
 
 type LogoProps = {
   /** `dark` = placed on a dark background, `light` = on a light background. */
@@ -35,19 +35,19 @@ export function Logo({
   const s = sizes[size];
 
   const mark = (
-    <span className={cn("inline-flex flex-col items-start gap-1.5", className)}>
+    <span className={clsx("inline-flex flex-col items-start gap-1.5", className)}>
       <span
-        className={cn(
+        className={clsx(
           "inline-flex font-display leading-none font-extrabold tracking-[0.04em]",
           variant === "dark" && "ring-1 ring-white/10",
         )}
       >
-        <span className={cn("bg-brand-purple text-ivory", s.block)}>H.H</span>
-        <span className={cn("bg-gold text-ink-950", s.block)}>ASSOCIATE</span>
+        <span className={clsx("bg-brand-purple text-ivory", s.block)}>H.H</span>
+        <span className={clsx("bg-gold text-ink-950", s.block)}>ASSOCIATE</span>
       </span>
       {showTagline && (
         <span
-          className={cn(
+          className={clsx(
             "font-semibold tracking-[0.14em] whitespace-nowrap uppercase",
             s.tagline,
             variant === "dark" ? "text-muted-on-dark" : "text-muted",

@@ -1,10 +1,14 @@
 // Supabase database types.
 // Regenerate after every migration with `pnpm db:types` (see README).
-// Written to match the output of `supabase gen types typescript`.
+// Matches the live project's generated types (tables, enums); helper types simplified.
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
+  // Lets createClient infer the PostgREST version.
+  __InternalSupabase: {
+    PostgrestVersion: "14.18";
+  };
   public: {
     Tables: {
       admins: {
@@ -292,9 +296,7 @@ export type Database = {
       };
     };
     Views: { [_ in never]: never };
-    Functions: {
-      is_admin: { Args: never; Returns: boolean };
-    };
+    Functions: { [_ in never]: never };
     Enums: {
       lead_status: "new" | "contacted" | "site_visit" | "quoted" | "won" | "lost";
       media_phase: "before" | "progress" | "after";
@@ -314,3 +316,15 @@ export type TablesInsert<T extends keyof PublicSchema["Tables"]> =
 export type TablesUpdate<T extends keyof PublicSchema["Tables"]> =
   PublicSchema["Tables"][T]["Update"];
 export type Enums<T extends keyof PublicSchema["Enums"]> = PublicSchema["Enums"][T];
+
+export const Constants = {
+  public: {
+    Enums: {
+      lead_status: ["new", "contacted", "site_visit", "quoted", "won", "lost"],
+      media_phase: ["before", "progress", "after"],
+      media_type: ["image", "video"],
+      project_category: ["residential", "commercial", "industrial", "civil"],
+      project_status: ["completed", "ongoing"],
+    },
+  },
+} as const;

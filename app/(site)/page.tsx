@@ -1,26 +1,50 @@
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import { Eyebrow } from "@/components/ui/Eyebrow";
+import { BeforeAfterSection } from "@/components/sections/BeforeAfterSection";
+import { FeaturedProjects } from "@/components/sections/FeaturedProjects";
+import { Hero } from "@/components/sections/Hero";
+import { OngoingProjects } from "@/components/sections/OngoingProjects";
+import { Process } from "@/components/sections/Process";
+import { QuoteSection } from "@/components/sections/QuoteSection";
+import { ServicesList } from "@/components/sections/ServicesList";
+import { Sectors } from "@/components/sections/Sectors";
+import { StatsBand } from "@/components/sections/StatsBand";
+import { Testimonials } from "@/components/sections/Testimonials";
+import { WhyUs } from "@/components/sections/WhyUs";
+import {
+  getFeaturedBeforeAfter,
+  getFeaturedProjects,
+  getOngoingProjects,
+} from "@/lib/data/projects";
+import { getServices } from "@/lib/data/services";
+import { getSiteSettings } from "@/lib/data/settings";
+import { getTestimonials } from "@/lib/data/testimonials";
 
-// Phase 1 placeholder: proves the layout shell. Replaced by the full home page in phase 2.
-export default function HomePage() {
+export default async function HomePage() {
+  const [settings, featured, ongoing, beforeAfter, services, testimonials] = await Promise.all([
+    getSiteSettings(),
+    getFeaturedProjects(),
+    getOngoingProjects(),
+    getFeaturedBeforeAfter(),
+    getServices(),
+    getTestimonials(),
+  ]);
+
+  // The hero shows the first completed featured project.
+  const heroProject =
+    featured.find((p) => p.status === "completed" && p.coverUrl) ?? featured[0] ?? null;
+
   return (
-    <section className="bg-ink-950 pt-(--header-height) text-ivory">
-      <div className="container-site section-y">
-        <Eyebrow tone="dark">Faisalabad · Khurrianwala</Eyebrow>
-        <h1 className="mt-6 max-w-4xl text-[40px] font-bold sm:text-[44px] lg:text-[68px]">
-          Homes, factories &amp; landmarks, <span className="text-gold">built to last.</span>
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg text-muted-on-dark">
-          Design, structural engineering and construction for residential, commercial, industrial
-          and civil projects across Faisalabad.
-        </p>
-        <div className="mt-10 flex flex-wrap gap-4">
-          <ButtonLink href="/contact#quote">Get a Free Site Visit</ButtonLink>
-          <ButtonLink href="/projects" variant="outline-dark">
-            View Our Work
-          </ButtonLink>
-        </div>
-      </div>
-    </section>
+    <>
+      <Hero project={heroProject} />
+      <StatsBand stats={settings.stats} />
+      <Sectors projects={featured} />
+      <ServicesList services={services} />
+      <FeaturedProjects projects={featured} />
+      <BeforeAfterSection pair={beforeAfter} />
+      <Process />
+      <WhyUs years={settings.stats.years} />
+      <Testimonials items={testimonials} />
+      <OngoingProjects projects={ongoing} />
+      <QuoteSection settings={settings} />
+    </>
   );
 }

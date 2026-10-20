@@ -12,11 +12,12 @@ export const buttonVariants: Record<Variant, string> = {
   "ghost-dark": "text-ivory hover:text-gold",
 };
 
+/** Shared button styles. No horizontal padding: add `px-*` at the call site. */
 export const buttonBase =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xs px-6 text-[15px] font-bold tracking-wide transition-colors duration-300 ease-arch";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xs text-[15px] font-bold tracking-wide transition-colors duration-300 ease-arch";
 
 type ButtonLinkProps = ComponentProps<typeof Link> & { variant?: Variant };
 
 export function ButtonLink({ variant = "gold", className, ...props }: ButtonLinkProps) {
-  return <Link className={cn(buttonBase, buttonVariants[variant], className)} {...props} />;
+  return <Link className={cn(buttonBase, buttonVariants[variant], "px-6", className)} {...props} />;
 }
