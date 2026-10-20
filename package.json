@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:types": "supabase gen types typescript --project-id qsunxqbdgfheyaifbofv --schema public > lib/supabase/database.types.ts",
-    "db:push": "supabase db push"
+    "db:push": "supabase db push",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck"
   },
   "dependencies": {
     "@hookform/resolvers": "^6.0.0",
