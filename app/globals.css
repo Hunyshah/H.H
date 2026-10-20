@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens — the single source of truth for colour, type and motion.
+   --------------------------------------------------------------------------- */
+@theme {
+  /* Colour */
+  --color-ink-950: #15112a;
+  --color-ink-900: #1e1833;
+  --color-ink-800: #2a2342;
+  --color-brand-purple: #4a3f78;
+  --color-gold: #c9a24d;
+  --color-gold-hover: #e2bf6e;
+  --color-gold-text: #7a5e1c;
+  --color-ivory: #f7f4ee;
+  --color-sand: #efeae0;
+  --color-line: #d4ccbc;
+  --color-line-dark: #3a3352;
+  --color-body: #15112a;
+  --color-muted: #5e5a6e;
+  --color-muted-on-dark: #cfc9e0;
+  --color-whatsapp: #25d366;
+
+  /* Type */
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --tracking-display: -0.02em;
+  --tracking-eyebrow: 0.18em;
+
+  /* Shape */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+
+  /* Motion */
+  --ease-arch: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-arch: 800ms;
+
+  /* Layout */
+  --container-site: 1280px;
+  --header-height: 76px;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: var(--header-height);
+  }
+
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-body);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: var(--tracking-display);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-gold);
+    color: var(--color-ink-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Layout utilities
+   --------------------------------------------------------------------------- */
+@utility container-site {
+  width: 100%;
+  max-width: var(--container-site);
+  margin-inline: auto;
+  padding-inline: 16px;
+  @media (width >= 48rem) {
+    padding-inline: 24px;
+  }
+}
+
+@utility section-y {
+  padding-block: 64px;
+  @media (width >= 48rem) {
+    padding-block: 88px;
+  }
+  @media (width >= 80rem) {
+    padding-block: 116px;
+  }
+}
+
+/* Thin gold outline offset behind an image — the signature motif. */
+@utility gold-frame {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    translate: 14px 14px;
+    border: 1px solid var(--color-gold);
+    border-radius: var(--radius-xs);
+    z-index: -1;
+    pointer-events: none;
+  }
+  @media (width >= 48rem) {
+    &::before {
+      translate: 22px 22px;
+    }
+  }
+}
