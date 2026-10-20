@@ -4,7 +4,7 @@ Production website for **H.H Associate**, a construction and civil engineering f
 Khurrianwala, Faisalabad. Next.js (App Router, Cache Components) + Tailwind CSS + Supabase,
 hosted on Vercel.
 
-> Status: **Phase 4 (quote form + leads pipeline)** complete. Sections marked _(phase N)_ are filled in as
+> Status: **Phase 5 (admin panel)** complete. Sections marked _(phase N)_ are filled in as
 > the build progresses.
 
 ## Stack
@@ -117,14 +117,15 @@ Local development with Docker: `pnpm supabase start` then `pnpm supabase db rese
    select id from auth.users where email = 'admin@example.com';
    ```
 
-3. Sign in at `/admin/login` _(admin panel arrives in phase 5)_.
+3. Sign in at `/admin/login`.
 
 ## Project structure
 
 ```
 app/
   (site)/            public pages (shared header, footer, WhatsApp button, mobile bar)
-  admin/             protected admin panel            (phase 5)
+  admin/login        sign-in page
+  admin/(panel)/     protected admin: dashboard, leads, projects, testimonials, services, settings
   globals.css        design tokens + base styles
 components/
   layout/            Header, Footer, Logo, MobileBar, WhatsAppButton, TrackedLink
@@ -168,6 +169,26 @@ Resend account owner's own email.
 
 **Turnstile setup:** Cloudflare dashboard → Turnstile → Add widget → add the production domain
 (and `localhost` for testing) → copy the site key and secret key.
+
+### Admin panel (`/admin`)
+
+| Section                | What it does                                                                                                                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard              | Leads this week / month (Pakistan time), leads by source (UTM or referrer), latest 5                                                                                         |
+| Leads                  | Filter by status, change status and notes inline, one-tap WhatsApp / call, CSV export (Excel-safe, formula-injection safe)                                                   |
+| Projects               | Create / edit every field (slug auto-generated), publish / feature toggles, delete                                                                                           |
+| Photos & videos        | Drag-and-drop multi-upload, compressed in the browser to max 2400 px WebP; alt text required before upload; phase, caption, reorder (drag or ↑/↓), set cover, YouTube videos |
+| Testimonials, Services | Simple CRUD (services include an FAQ editor that feeds the FAQPage schema)                                                                                                   |
+| Settings               | Contact details, Google Maps embed, stats band, social links                                                                                                                 |
+
+**Access control** is layered: `proxy.ts` sends signed-out visitors to the login page; the
+`(panel)` layout re-checks the session _and_ `admins` membership on every request; every Server
+Action calls `assertAdmin()`; and RLS in Postgres enforces admin-only writes regardless.
+Photos live in the `project-images` bucket under `projects/<project-id>/`.
+
+**Publishing without a redeploy:** every save calls `updateTag()` for the affected cache tags
+(`lib/data/tags.ts`), so public pages show the change on the next request. The Supabase clients
+use `cache: "no-store"` fetches so Next's untagged fetch cache can't serve stale rows.
 
 ### Motion
 

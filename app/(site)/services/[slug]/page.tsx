@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { Faq } from "@/components/content/Faq";
 import { Markdown } from "@/components/content/Markdown";
+import { DetailSkeleton } from "@/components/layout/DetailSkeleton";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/motion/Reveal";
 import { ProjectsGrid } from "@/components/projects/ProjectsGrid";
@@ -35,7 +37,16 @@ export async function generateMetadata({
   };
 }
 
-export default async function ServicePage({ params }: PageProps<"/services/[slug]">) {
+// See projects/[slug]: params are awaited inside <Suspense> for the App Shell.
+export default function ServicePage({ params }: PageProps<"/services/[slug]">) {
+  return (
+    <Suspense fallback={<DetailSkeleton />}>
+      <ServiceContent params={params} />
+    </Suspense>
+  );
+}
+
+async function ServiceContent({ params }: Pick<PageProps<"/services/[slug]">, "params">) {
   const { slug } = await params;
   const [service, settings] = await Promise.all([getServiceBySlug(slug), getSiteSettings()]);
   if (!service) notFound();

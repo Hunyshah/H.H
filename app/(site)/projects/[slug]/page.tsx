@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { Markdown } from "@/components/content/Markdown";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { BeforeAfter } from "@/components/media/BeforeAfter";
 import { ProjectGallery } from "@/components/media/ProjectGallery";
 import { VideoPlayer } from "@/components/media/VideoPlayer";
+import { DetailSkeleton } from "@/components/layout/DetailSkeleton";
 import { Reveal } from "@/components/motion/Reveal";
 import { ProjectsGrid } from "@/components/projects/ProjectsGrid";
 import { ShareButtons } from "@/components/projects/ShareButtons";
@@ -58,7 +60,18 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
+// params are awaited inside <Suspense> so Next.js can keep a generic App Shell
+// for this route (new projects published from the admin render on demand and
+// re-render after cache invalidation). Known slugs still prerender fully.
+export default function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
+  return (
+    <Suspense fallback={<DetailSkeleton />}>
+      <ProjectContent params={params} />
+    </Suspense>
+  );
+}
+
+async function ProjectContent({ params }: Pick<PageProps<"/projects/[slug]">, "params">) {
   const { slug } = await params;
   const [project, settings] = await Promise.all([getProjectBySlug(slug), getSiteSettings()]);
   if (!project) notFound();

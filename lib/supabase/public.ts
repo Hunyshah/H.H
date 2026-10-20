@@ -16,6 +16,10 @@ export function getPublicClient(): SupabaseClient<Database> | null {
   if (!isSupabaseConfigured) return null;
   client ??= createClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: { persistSession: false, autoRefreshToken: false },
+    // Opt out of Next's fetch Data Cache: its entries are keyed by URL and
+    // carry no tags, so they would survive updateTag() and serve stale rows.
+    // Caching happens one level up, in tagged "use cache" functions.
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
   });
   return client;
 }
