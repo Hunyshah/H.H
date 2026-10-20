@@ -9,6 +9,11 @@ import { clsx } from "clsx";
 type VideoPlayerProps = {
   url: string;
   title: string;
+  /** Optional poster image; defaults to the YouTube thumbnail. */
+  poster?: string | null;
+  /** Load the poster eagerly (above-the-fold use). */
+  preload?: boolean;
+  sizes?: string;
   className?: string;
 };
 
@@ -17,7 +22,7 @@ type VideoPlayerProps = {
  * only after a click. All video on the site goes through this component, so
  * switching to Mux later means changing this file only.
  */
-export function VideoPlayer({ url, title, className }: VideoPlayerProps) {
+export function VideoPlayer({ url, title, poster, preload, sizes, className }: VideoPlayerProps) {
   const [playing, setPlaying] = useState(false);
   const id = youTubeId(url);
   if (!id) return null;
@@ -40,10 +45,11 @@ export function VideoPlayer({ url, title, className }: VideoPlayerProps) {
           className="group absolute inset-0 size-full"
         >
           <Image
-            src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+            src={poster ?? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
             alt=""
             fill
-            sizes="(min-width: 1024px) 640px, 100vw"
+            preload={preload}
+            sizes={sizes ?? "(min-width: 1024px) 640px, 100vw"}
             className="object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-100"
           />
           <span className="absolute top-1/2 left-1/2 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gold text-ink-950 transition-transform duration-500 ease-arch group-hover:scale-110">

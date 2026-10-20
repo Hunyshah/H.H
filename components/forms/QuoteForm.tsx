@@ -50,7 +50,7 @@ export function QuoteForm({ whatsapp, defaultProjectType }: QuoteFormProps) {
     formState: { errors },
   } = useForm<LeadInput>({
     resolver: zodResolver(leadSchema),
-    defaultValues: { projectType: defaultProjectType, message: "" },
+    defaultValues: { projectType: defaultProjectType ?? projectTypeFromUrl(), message: "" },
     mode: "onTouched",
   });
 
@@ -316,6 +316,13 @@ export function QuoteForm({ whatsapp, defaultProjectType }: QuoteFormProps) {
       <p className="mt-4 text-xs text-muted">{copy.privacy}</p>
     </form>
   );
+}
+
+/** Pre-selects the project type from `?type=` (e.g. links from project pages). */
+function projectTypeFromUrl(): LeadInput["projectType"] | undefined {
+  if (typeof window === "undefined") return undefined;
+  const type = new URLSearchParams(window.location.search).get("type");
+  return projectTypes.find((t) => t === type);
 }
 
 function FieldError({ message }: { message?: string }) {

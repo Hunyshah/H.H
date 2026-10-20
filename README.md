@@ -4,7 +4,7 @@ Production website for **H.H Associate**, a construction and civil engineering f
 Khurrianwala, Faisalabad. Next.js (App Router, Cache Components) + Tailwind CSS + Supabase,
 hosted on Vercel.
 
-> Status: **Phase 2 (home page)** complete. Sections marked _(phase N)_ are filled in as
+> Status: **Phase 3 (inner pages)** complete. Sections marked _(phase N)_ are filled in as
 > the build progresses.
 
 ## Stack

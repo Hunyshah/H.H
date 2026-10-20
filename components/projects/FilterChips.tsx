@@ -7,7 +7,8 @@ export type ChipOption = { value: string; label: string };
 type FilterChipsProps = {
   options: ChipOption[];
   value: string;
-  onChange: (value: string) => void;
+  /** Omitted for the static (prerendered) state, where chips are inert until hydration. */
+  onChange?: (value: string) => void;
   label: string;
   tone?: "light" | "dark";
 };
@@ -23,7 +24,7 @@ export function FilterChips({ options, value, onChange, label, tone = "dark" }: 
             key={o.value}
             type="button"
             aria-pressed={active}
-            onClick={() => onChange(o.value)}
+            onClick={() => onChange?.(o.value)}
             className={clsx(
               "min-h-11 rounded-xs border px-4 text-sm font-bold transition-colors duration-300",
               tone === "dark"
