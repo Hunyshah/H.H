@@ -31,7 +31,7 @@ export default async function ProcessPage() {
               className="grid gap-6 border-t border-line py-12 first:border-t-0 first:pt-0 last:pb-0 md:grid-cols-[120px_1fr] lg:grid-cols-[160px_1fr_380px] lg:gap-12 lg:py-16"
             >
               <Reveal>
-                <span className="font-display text-6xl leading-none font-extrabold tracking-(--tracking-display) text-gold lg:text-7xl">
+                <span className="font-display text-6xl leading-none font-extrabold tracking-(--tracking-display) text-gold-text lg:text-7xl">
                   {String(i + 1).padStart(2, "0")}
                 </span>
               </Reveal>

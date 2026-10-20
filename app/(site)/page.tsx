@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { BeforeAfterSection } from "@/components/sections/BeforeAfterSection";
 import { FeaturedProjects } from "@/components/sections/FeaturedProjects";
 import { Hero } from "@/components/sections/Hero";
@@ -17,6 +19,13 @@ import {
 import { getServices } from "@/lib/data/services";
 import { getSiteSettings } from "@/lib/data/settings";
 import { getTestimonials } from "@/lib/data/testimonials";
+
+export const metadata: Metadata = {
+  title: { absolute: "H.H Associate — Construction Company in Faisalabad & Khurrianwala" },
+  description:
+    "Design, structural engineering and construction of homes, commercial buildings, factories and civil works in Faisalabad and Khurrianwala. Free site visit and estimate.",
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const [settings, featured, ongoing, beforeAfter, services, testimonials] = await Promise.all([

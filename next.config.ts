@@ -4,9 +4,40 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
   : null;
 
-// A strict CSP is added in the SEO/polish phase once every third-party script
-// (GA4, Meta Pixel, Turnstile, YouTube, Maps) is in place.
+const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
+  : "";
+const isDev = process.env.NODE_ENV === "development";
+const isHttpsSite = (process.env.NEXT_PUBLIC_SITE_URL ?? "").startsWith("https://");
+
+/**
+ * Content Security Policy without nonces: nonce-based CSP needs dynamic
+ * rendering and is incompatible with Partial Prerendering, so inline scripts
+ * (Next.js bootstrap, the reveal observer, analytics init) use 'unsafe-inline'
+ * while every external host is allow-listed and plugins, base-URI hijacking,
+ * foreign form targets and framing are blocked.
+ */
+const csp = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://connect.facebook.net https://challenges.cloudflare.com https://va.vercel-scripts.com`,
+  "style-src 'self' 'unsafe-inline'",
+  `img-src 'self' data: blob: https://images.unsplash.com https://i.ytimg.com ${supabaseOrigin} https://www.google-analytics.com https://*.googletagmanager.com https://www.facebook.com`,
+  "font-src 'self' data:",
+  `connect-src 'self' ${supabaseOrigin} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://connect.facebook.net https://www.facebook.com https://challenges.cloudflare.com https://vitals.vercel-insights.com${isDev ? " ws:" : ""}`,
+  "frame-src https://www.youtube-nocookie.com https://www.google.com https://challenges.cloudflare.com",
+  "media-src 'self' https:",
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+  ...(isHttpsSite ? ["upgrade-insecure-requests"] : []),
+]
+  .join("; ")
+  .replace(/\s{2,}/g, " ");
+
 const securityHeaders = [
+  { key: "Content-Security-Policy", value: csp },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },

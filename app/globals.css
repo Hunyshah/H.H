@@ -172,13 +172,11 @@
     transition-duration: 1.4s;
   }
 
-  /* Headline words rise one by one (see components/motion/SplitWords). */
+  /* Headline words rise one by one (see components/motion/SplitWords).
+     Transform only and never clipped: the headline is painted (and counts for
+     LCP) on first render, then settles into place. */
   .split-word {
     display: inline-block;
-    overflow: hidden;
-    vertical-align: top;
-    padding-bottom: 0.08em;
-    margin-bottom: -0.08em;
   }
   .split-word > span {
     display: inline-block;
@@ -188,7 +186,25 @@
     transition-delay: calc(var(--reveal-delay, 0ms) + var(--i, 0) * 70ms);
   }
   .js [data-reveal="words"]:not(.is-in) .split-word > span {
-    transform: translateY(105%);
+    transform: translateY(0.32em);
+  }
+
+  /* Above-the-fold text: transform only, visible from the first paint. */
+  .js [data-reveal="rise"]:not(.is-in) {
+    transform: translateY(16px);
+  }
+
+  /* Hero images: the image paints immediately (fast LCP) under an ink
+     "curtain" that slides away — transform only. */
+  [data-reveal="curtain"] {
+    transform: scaleX(0);
+    transform-origin: right center;
+  }
+  .js [data-reveal="curtain"]:not(.is-in) {
+    transform: scaleX(1);
+  }
+  .js [data-reveal="curtain"] {
+    transition-duration: 1.2s;
   }
 
   /* Gold underline that draws in on hover (cards, links). */
@@ -210,11 +226,18 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    /* Everything becomes a simple fade. */
+    /* Everything becomes a simple fade; above-the-fold content just appears. */
     .js [data-reveal]:not(.is-in) {
       opacity: 0;
       transform: none !important;
       clip-path: none !important;
+    }
+    .js [data-reveal="rise"]:not(.is-in),
+    .js [data-reveal="words"]:not(.is-in) {
+      opacity: 1;
+    }
+    .js [data-reveal="curtain"] {
+      display: none;
     }
     .js [data-reveal="words"] .split-word > span {
       transform: none !important;
@@ -236,4 +259,31 @@
   from {
     opacity: 0;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Lenis (from lenis/dist/lenis.css, inlined to avoid a second render-blocking
+   stylesheet)
+   --------------------------------------------------------------------------- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
 }

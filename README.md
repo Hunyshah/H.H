@@ -4,7 +4,7 @@ Production website for **H.H Associate**, a construction and civil engineering f
 Khurrianwala, Faisalabad. Next.js (App Router, Cache Components) + Tailwind CSS + Supabase,
 hosted on Vercel.
 
-> Status: **Phase 5 (admin panel)** complete. Sections marked _(phase N)_ are filled in as
+> Status: **Phase 6 (SEO and polish)** complete. Sections marked _(phase N)_ are filled in as
 > the build progresses.
 
 ## Stack
@@ -190,12 +190,29 @@ Photos live in the `project-images` bucket under `projects/<project-id>/`.
 (`lib/data/tags.ts`), so public pages show the change on the next request. The Supabase clients
 use `cache: "no-store"` fetches so Next's untagged fetch cache can't serve stale rows.
 
+### SEO and social sharing
+
+- **Metadata**: every page sets a unique title, description and canonical URL; project pages use
+  the project's SEO fields when filled in.
+- **`/sitemap.xml`** lists every public page, published project (with `lastModified`) and service;
+  **`/robots.txt`** disallows `/admin` and `/thank-you`.
+- **JSON-LD**: `GeneralContractor` on every public page (fields still in `[brackets]` are left
+  out), `BreadcrumbList` on inner pages, `FAQPage` on service pages.
+- **Open Graph images** (`app/opengraph-image.tsx`, `app/(site)/projects/[slug]/opengraph-image.tsx`):
+  cover photo + wordmark + title at 1200×630, rendered with Satori and re-encoded as JPEG with
+  sharp (~40–100 KB, well under WhatsApp's preview limit). Fonts are bundled in `assets/fonts`.
+- **Security headers** in `next.config.ts`, including a Content Security Policy. Nonce-based CSP
+  needs dynamic rendering, so inline scripts use `'unsafe-inline'` while external hosts are
+  allow-listed. **Add a host to the CSP when you add a new third-party service.**
+
 ### Motion
 
 Animations follow one easing (`cubic-bezier(0.22, 1, 0.36, 1)`, tokens in `globals.css`):
 
 - **Reveals** (`components/motion/Reveal`, `SplitWords`): CSS transitions armed by a tiny inline
   script in the root layout. Content is in the server HTML and stays visible without JS.
+  Above-the-fold content uses transform-only variants (`rise`, `words`, `curtain`) so it is painted
+  on the first frame and never delays LCP.
 - **Parallax, magnetic CTA, count-up**: small hand-written client components, desktop-only
   where required, transform/opacity only.
 - **Process timeline**: GSAP ScrollTrigger, dynamically imported when the section nears the

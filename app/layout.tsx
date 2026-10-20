@@ -34,6 +34,14 @@ export const metadata: Metadata = {
     locale: "en_PK",
     siteName: site.name,
   },
+  twitter: { card: "summary_large_image" },
+  keywords: [
+    "construction company Faisalabad",
+    "factory construction Faisalabad",
+    "house construction Khurrianwala",
+    "civil engineering Faisalabad",
+    "naksha design Faisalabad",
+  ],
   formatDetection: { telephone: false },
 };
 

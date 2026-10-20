@@ -237,6 +237,7 @@ export function MediaManager({
             type="file"
             accept="image/jpeg,image/png,image/webp,image/avif"
             multiple
+            aria-label="Choose photos to upload"
             className="sr-only"
             tabIndex={-1}
             onChange={(e) => {

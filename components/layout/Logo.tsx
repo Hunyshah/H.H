@@ -63,8 +63,10 @@ export function Logo({
   if (!asLink) return mark;
 
   return (
-    <Link href="/" aria-label={`${site.name} — home`} className="inline-flex">
+    <Link href="/" className="inline-flex">
       {mark}
+      {/* Accessible name keeps the visible text and adds the destination. */}
+      <span className="sr-only"> — home</span>
     </Link>
   );
 }

@@ -1,11 +1,10 @@
-import "lenis/dist/lenis.css";
-
 import { Analytics } from "@/components/analytics/Analytics";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { MobileBar } from "@/components/layout/MobileBar";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
+import { OrganizationJsonLd } from "@/components/seo/OrganizationJsonLd";
 import { ui } from "@/lib/content/site";
 import { getSiteSettings } from "@/lib/data/settings";
 
@@ -27,6 +26,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <MobileBar phone={settings.phone} whatsapp={settings.whatsapp} />
       <SmoothScroll />
       <Analytics />
+      <OrganizationJsonLd settings={settings} />
     </>
   );
 }

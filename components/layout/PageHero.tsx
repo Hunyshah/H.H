@@ -37,7 +37,7 @@ export function PageHero({ eyebrow, title, intro, breadcrumbs, children }: PageH
           <SplitWords text={title} />
         </h1>
         {intro && (
-          <Reveal delay={450}>
+          <Reveal variant="rise" delay={350}>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-on-dark sm:text-lg">
               {intro}
             </p>

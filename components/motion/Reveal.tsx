@@ -1,6 +1,6 @@
 import type { CSSProperties, ElementType, ReactNode } from "react";
 
-export type RevealVariant = "up" | "fade" | "wipe" | "wipe-up" | "frame";
+export type RevealVariant = "up" | "fade" | "rise" | "wipe" | "wipe-up" | "frame" | "curtain";
 
 type RevealProps = {
   as?: ElementType;

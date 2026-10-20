@@ -64,7 +64,7 @@ export function Hero({ project, backgroundVideoSrc }: HeroProps) {
               <SplitWords text={hero.titleAccent} offset={leadWords} />
             </span>
           </h1>
-          <Reveal delay={650}>
+          <Reveal variant="rise" delay={500}>
             <p className="mt-7 max-w-xl text-base leading-relaxed text-muted-on-dark sm:text-lg">
               {hero.intro}
             </p>
@@ -88,11 +88,7 @@ export function Hero({ project, backgroundVideoSrc }: HeroProps) {
             style={{ "--reveal-delay": "500ms" } as React.CSSProperties}
             className="absolute inset-0 translate-x-3.5 translate-y-3.5 rounded-xs border border-gold md:translate-x-5.5 md:translate-y-5.5"
           />
-          <div
-            data-reveal="wipe"
-            style={{ "--reveal-delay": "200ms" } as React.CSSProperties}
-            className="relative aspect-[4/5] overflow-hidden rounded-xs bg-ink-900 sm:aspect-[5/4] lg:aspect-[4/5]"
-          >
+          <div className="relative aspect-[4/5] overflow-hidden rounded-xs bg-ink-900 sm:aspect-[5/4] lg:aspect-[4/5]">
             <Image
               src={imageSrc}
               alt={
@@ -107,6 +103,12 @@ export function Hero({ project, backgroundVideoSrc }: HeroProps) {
               placeholder="blur"
               blurDataURL={BLUR_DATA_URL}
               className="object-cover"
+            />
+            <div
+              aria-hidden="true"
+              data-reveal="curtain"
+              style={{ "--reveal-delay": "150ms" } as React.CSSProperties}
+              className="absolute inset-0 bg-ink-950"
             />
           </div>
           {project && (

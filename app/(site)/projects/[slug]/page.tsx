@@ -116,13 +116,13 @@ async function ProjectContent({ params }: Pick<PageProps<"/projects/[slug]">, "p
                   {project.location ? ` · ${project.location}` : ""}
                 </Eyebrow>
               </Reveal>
-              <Reveal delay={140}>
+              <Reveal variant="rise" delay={140}>
                 <h1 className="mt-5 text-[36px] leading-[1.06] font-extrabold sm:text-[44px] lg:text-[60px]">
                   {project.title}
                 </h1>
               </Reveal>
               {project.summary && (
-                <Reveal delay={240}>
+                <Reveal variant="rise" delay={240}>
                   <p className="mt-5 text-base leading-relaxed text-muted-on-dark sm:text-lg">
                     {project.summary}
                   </p>
@@ -140,7 +140,7 @@ async function ProjectContent({ params }: Pick<PageProps<"/projects/[slug]">, "p
           </div>
         </div>
         <div className="relative z-10 container-site">
-          <Reveal variant="wipe" className="relative">
+          <div className="relative overflow-hidden rounded-xs">
             {project.heroVideoUrl ? (
               <VideoPlayer
                 url={project.heroVideoUrl}
@@ -165,7 +165,12 @@ async function ProjectContent({ params }: Pick<PageProps<"/projects/[slug]">, "p
                 />
               </div>
             )}
-          </Reveal>
+            <Reveal
+              variant="curtain"
+              delay={150}
+              className="pointer-events-none absolute inset-0 bg-ink-950"
+            />
+          </div>
         </div>
         {/* Ivory runs behind the lower half of the cover */}
         <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[18%] bg-ivory" />

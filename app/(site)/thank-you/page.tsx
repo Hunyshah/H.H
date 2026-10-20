@@ -21,12 +21,12 @@ export default async function ThankYouPage() {
         <Reveal variant="fade">
           <Eyebrow tone="dark">{copy.eyebrow}</Eyebrow>
         </Reveal>
-        <Reveal delay={100}>
+        <Reveal variant="rise" delay={100}>
           <h1 className="mt-6 max-w-3xl text-[38px] leading-[1.06] font-extrabold sm:text-[44px] lg:text-[62px]">
             {copy.title}
           </h1>
         </Reveal>
-        <Reveal delay={200}>
+        <Reveal variant="rise" delay={200}>
           <p className="mt-6 max-w-xl text-lg text-muted-on-dark">{copy.text}</p>
         </Reveal>
         <Reveal delay={300} className="mt-10 flex flex-wrap gap-4">

@@ -19,6 +19,7 @@ export type ProjectCard = {
   scope: string | null;
   summary: string | null;
   coverUrl: string | null;
+  updatedAt?: string | null;
 };
 
 export type BeforeAfterPair = {
@@ -29,7 +30,7 @@ export type BeforeAfterPair = {
 };
 
 const CARD_COLUMNS =
-  "id, slug, title, category, status, location, scope, summary, cover_image_path";
+  "id, slug, title, category, status, location, scope, summary, cover_image_path, updated_at";
 
 type CardRow = {
   id: string;
@@ -41,11 +42,12 @@ type CardRow = {
   scope: string | null;
   summary: string | null;
   cover_image_path: string | null;
+  updated_at: string;
 };
 
 function toCard(row: CardRow): ProjectCard {
-  const { cover_image_path, ...rest } = row;
-  return { ...rest, coverUrl: imageUrl(cover_image_path) };
+  const { cover_image_path, updated_at, ...rest } = row;
+  return { ...rest, coverUrl: imageUrl(cover_image_path), updatedAt: updated_at };
 }
 
 /** Published projects flagged `is_featured`, in admin sort order. */

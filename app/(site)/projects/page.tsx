@@ -28,8 +28,11 @@ export default async function ProjectsPage() {
         intro={copy.intro}
         breadcrumbs={[{ label: copy.title, href: "/projects" }]}
       />
-      <section aria-label="Project list" className="bg-ivory section-y">
+      <section aria-labelledby="project-list-title" className="bg-ivory section-y">
         <div className="container-site">
+          <h2 id="project-list-title" className="sr-only">
+            All projects
+          </h2>
           {/* The fallback is the full, unfiltered grid: prerendered HTML for
               crawlers; the URL filter applies once the client reads ?category=. */}
           <Suspense fallback={<StaticProjects projects={projects} />}>
