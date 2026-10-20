@@ -17,10 +17,15 @@ export const quoteForm = {
   sending: "Sending…",
   loading: "Loading the estimate form…",
   privacy: "We only use your details to contact you about this project.",
-  sentTitle: "Thank you — we've received your request.",
-  sentText:
-    "An engineer will call you shortly to arrange a site visit. For a faster reply, continue on WhatsApp.",
+} as const;
+
+export const thankYou = {
+  eyebrow: "Request received",
+  title: "Thank you — we'll be in touch soon.",
+  text: "An engineer will call you to arrange a free site visit. For a faster reply, continue the conversation on WhatsApp.",
   continueWhatsapp: "Continue on WhatsApp",
-  whatsappSummaryIntro:
+  whatsappIntro:
     "Assalam-o-Alaikum H.H Associate, I just requested a free estimate on your website.",
+  viewProjects: "Browse our projects",
+  metaTitle: "Thank you",
 } as const;

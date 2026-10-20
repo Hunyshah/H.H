@@ -1,15 +1,16 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useRef, useState, useTransition } from "react";
 import { useForm, type FieldErrors } from "react-hook-form";
 
-import { WhatsAppIcon } from "@/components/icons";
 import { buttonBase, buttonVariants } from "@/components/ui/ButtonLink";
 import { submitLead } from "@/lib/actions/leads";
-import { trackEvent } from "@/lib/analytics/events";
-import { whatsappHref } from "@/lib/contact";
+import { LEAD_SUMMARY_KEY } from "@/lib/analytics/lead";
 import { quoteForm as copy } from "@/lib/content/forms";
+
+import { Turnstile, type TurnstileHandle } from "./Turnstile";
 import { clsx } from "clsx";
 import {
   budgets,
@@ -21,7 +22,6 @@ import {
 } from "@/lib/validations/lead";
 
 type QuoteFormProps = {
-  whatsapp: string;
   defaultProjectType?: LeadInput["projectType"];
 };
 
@@ -35,18 +35,19 @@ const labelClass = "block text-sm font-bold text-body";
  * Free estimate form. Phones get three short steps; tablets and desktops see
  * every field at once. Validation runs per step on mobile and in full on submit.
  */
-export function QuoteForm({ whatsapp, defaultProjectType }: QuoteFormProps) {
+export function QuoteForm({ defaultProjectType }: QuoteFormProps) {
   const [step, setStep] = useState(0);
-  const [status, setStatus] = useState<"idle" | "sent" | "error">("idle");
   const [serverError, setServerError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
+  const turnstile = useRef<TurnstileHandle>(null);
+  const honeypot = useRef<HTMLInputElement>(null);
 
   const {
     register,
     handleSubmit,
     trigger,
     setError,
-    getValues,
     formState: { errors },
   } = useForm<LeadInput>({
     resolver: zodResolver(leadSchema),
@@ -79,13 +80,35 @@ export function QuoteForm({ whatsapp, defaultProjectType }: QuoteFormProps) {
   const onSubmit = (values: LeadInput) => {
     setServerError(null);
     startTransition(async () => {
-      const result = await submitLead(values);
+      const turnstileToken = await turnstile.current?.getToken();
+      const result = await submitLead({
+        ...values,
+        turnstileToken,
+        website: honeypot.current?.value,
+      });
       if (result.ok) {
-        trackEvent("lead", { project_type: values.projectType });
-        setStatus("sent");
+        // Read once by /thank-you to fire the conversion and pre-fill WhatsApp.
+        // Honeypot hits get the same screen but no conversion.
+        if (!result.ignored) {
+          try {
+            sessionStorage.setItem(
+              LEAD_SUMMARY_KEY,
+              JSON.stringify({
+                name: values.name,
+                projectType: values.projectType,
+                plotSize: values.plotSize,
+                location: values.location,
+                budget: values.budget,
+              }),
+            );
+          } catch {
+            // Private mode: the thank-you page falls back to a generic message.
+          }
+        }
+        router.push("/thank-you");
         return;
       }
-      setStatus("error");
+      turnstile.current?.reset();
       setServerError(result.error);
       for (const [field, message] of Object.entries(result.fieldErrors ?? {})) {
         setError(field as keyof LeadInput, { message });
@@ -93,35 +116,15 @@ export function QuoteForm({ whatsapp, defaultProjectType }: QuoteFormProps) {
     });
   };
 
-  if (status === "sent") {
-    const v = getValues();
-    const summary = `${copy.whatsappSummaryIntro}\nName: ${v.name}\nProject: ${v.projectType}\nPlot: ${v.plotSize}, ${v.location}\nBudget: ${v.budget}`;
-    return (
-      <div role="status" className="rounded-xs bg-ivory p-8 text-body sm:p-10">
-        <p className="font-display text-2xl font-bold">{copy.sentTitle}</p>
-        <p className="mt-3 text-muted">{copy.sentText}</p>
-        <a
-          href={whatsappHref(whatsapp, summary)}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => trackEvent("whatsapp_click", { placement: "quote_sent" })}
-          className={clsx(buttonBase, "mt-8 bg-whatsapp px-6 text-ink-950 hover:brightness-95")}
-        >
-          <WhatsAppIcon size={20} />
-          {copy.continueWhatsapp}
-        </a>
-      </div>
-    );
-  }
-
   const stepClass = (i: number) => clsx("grid gap-6", step !== i && "max-md:hidden");
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit, onInvalid)}
+      // Wrapped so handleSubmit runs per event, not during render.
+      onSubmit={(e) => void handleSubmit(onSubmit, onInvalid)(e)}
       noValidate
       aria-describedby={serverError ? "quote-error" : undefined}
-      className="rounded-xs bg-ivory p-6 text-body sm:p-8 lg:p-10"
+      className="relative rounded-xs bg-ivory p-6 text-body sm:p-8 lg:p-10"
     >
       {/* Mobile step indicator */}
       <div className="mb-7 md:hidden">
@@ -271,6 +274,21 @@ export function QuoteForm({ whatsapp, defaultProjectType }: QuoteFormProps) {
           </div>
         </div>
       </div>
+
+      {/* Honeypot: invisible to people and assistive tech, tempting to bots. */}
+      <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+        <label htmlFor="website">Website</label>
+        <input
+          ref={honeypot}
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
+      <Turnstile ref={turnstile} />
 
       {serverError && (
         <p

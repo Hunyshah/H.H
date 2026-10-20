@@ -62,7 +62,7 @@ export function QuoteSection({ settings, defaultProjectType }: QuoteSectionProps
           </Reveal>
         </div>
         <Reveal delay={150}>
-          <LazyQuoteForm whatsapp={settings.whatsapp} defaultProjectType={defaultProjectType} />
+          <LazyQuoteForm defaultProjectType={defaultProjectType} />
         </Reveal>
       </div>
     </section>

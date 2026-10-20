@@ -4,7 +4,7 @@ Production website for **H.H Associate**, a construction and civil engineering f
 Khurrianwala, Faisalabad. Next.js (App Router, Cache Components) + Tailwind CSS + Supabase,
 hosted on Vercel.
 
-> Status: **Phase 3 (inner pages)** complete. Sections marked _(phase N)_ are filled in as
+> Status: **Phase 4 (quote form + leads pipeline)** complete. Sections marked _(phase N)_ are filled in as
 > the build progresses.
 
 ## Stack
@@ -69,6 +69,7 @@ Schema, RLS policies, the storage bucket and base content live in `supabase/migr
 | `…0100_schema.sql`             | Enums, tables, indexes, `updated_at` trigger                                            |
 | `…0200_rls.sql`                | `is_admin()` helper, RLS on every table, `project-images` bucket + policies             |
 | `…022258_base_content.sql`     |
+| `…025544_leads_ip_hash.sql`    | `leads.ip_hash` (keyed hash, never the raw IP) for rate limiting                        |
 | `…022350_private_is_admin.sql` | Moves `is_admin()` to a non-API `private` schema; users can read their own `admins` row | The 6 services and the `site_settings` row (placeholders) |
 | `supabase/seed.sql`            | 6 sample `[placeholder]` projects with gallery images                                   |
 
@@ -138,6 +139,35 @@ lib/
 proxy.ts             /admin session gate (Next.js 16 renamed middleware → proxy)
 supabase/            migrations, seed, local config
 ```
+
+### Leads pipeline
+
+`lib/actions/leads.ts` handles every quote form submission:
+
+1. **Validate** with the shared Zod schema (`lib/validations/lead.ts`; Pakistani mobile numbers
+   such as `0300-1234567` or `+92 300 1234567`).
+2. **Honeypot**: a hidden field; bots that fill it get a normal-looking success, nothing is
+   stored and no conversion fires.
+3. **Turnstile** (`lib/server/turnstile.ts`): invisible for most visitors. Skipped with a
+   warning when `TURNSTILE_SECRET_KEY` is empty — set both keys in production.
+4. **Rate limit** (`lib/server/rate-limit.ts`): max 3 leads per 10 minutes and 10 per day per IP,
+   counted in Postgres via `leads.ip_hash`. No extra service needed.
+5. **Insert** with the service-role key, including first-touch UTM parameters and external
+   referrer from the `hh_attr` cookie (`components/analytics/AttributionCapture.tsx`, 90 days).
+6. **Email** via the Resend REST API, sent after the response with `after()`. Skipped when
+   Resend isn't configured; the lead is saved either way.
+7. The browser goes to **`/thank-you`**, which fires GA4 `generate_lead` and Meta Pixel `Lead`
+   once per submission and offers WhatsApp with the request pre-filled.
+
+Call and WhatsApp clicks anywhere on the site fire `call_click` / `whatsapp_click` (GA4) and
+`Contact` (Pixel). GA4, the Pixel and Vercel Analytics load only when their env vars are set.
+
+**Resend setup:** verify your domain at resend.com → Domains, then set `LEAD_EMAIL_FROM` to an
+address on it. Until then, Resend's test sender `onboarding@resend.dev` only delivers to the
+Resend account owner's own email.
+
+**Turnstile setup:** Cloudflare dashboard → Turnstile → Add widget → add the production domain
+(and `localhost` for testing) → copy the site key and secret key.
 
 ### Motion
 

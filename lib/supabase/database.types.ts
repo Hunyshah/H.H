@@ -22,6 +22,7 @@ export type Database = {
           budget: string | null;
           created_at: string;
           id: string;
+          ip_hash: string | null;
           location: string | null;
           message: string | null;
           name: string;
@@ -40,6 +41,7 @@ export type Database = {
           budget?: string | null;
           created_at?: string;
           id?: string;
+          ip_hash?: string | null;
           location?: string | null;
           message?: string | null;
           name: string;
@@ -58,6 +60,7 @@ export type Database = {
           budget?: string | null;
           created_at?: string;
           id?: string;
+          ip_hash?: string | null;
           location?: string | null;
           message?: string | null;
           name?: string;
